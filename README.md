@@ -1,70 +1,37 @@
 # BT03 - CI/CD đa môi trường với GitHub Environments
 
-## 1. Tạo hai môi trường trên GitHub
+## Workflow
+
+File `.github/workflows/cd-multi-env.yml` định nghĩa:
+
+- `deploy-staging` cho branch `develop`, environment `staging`.
+- `deploy-prod` cho branch `main`, environment `production`.
+- `production` yêu cầu reviewer `lethinh26`.
+
+Hai environment đã được tạo thật trên repository.
+
+## Kết quả chạy thật trên develop
+
+Run: https://github.com/IT209-K24-LePhuThinh/SS12-BT03/actions/runs/38771471287
 
 ```text
-Settings -> Environments
-- staging
-- production
+Deploy to Staging    success    2026-10-15 16:44:09 - 16:44:13 UTC
+Deploy to Production skipped
 
-production protection rules:
-- Required reviewers: lethinh26
+Deploying to staging
 ```
 
-## 2. Tạo file `.github/workflows/cd-multi-env.yml`
+## Kết quả chạy thật trên main
 
-```yaml
-name: CD Multi Environment
-
-on:
-  push:
-    branches: [develop, main]
-
-jobs:
-  deploy-staging:
-    name: Deploy to Staging
-    if: github.ref == 'refs/heads/develop'
-    runs-on: ubuntu-latest
-    environment: staging
-    steps:
-      - uses: actions/checkout@v5
-      - run: echo "Deploying to staging"
-
-  deploy-prod:
-    name: Deploy to Production
-    if: github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    environment:
-      name: production
-      url: https://api.prod.example.com
-    steps:
-      - uses: actions/checkout@v5
-      - run: echo "Deploying to production"
-```
-
-## 3. Kết quả khi push vào develop
+Run: https://github.com/IT209-K24-LePhuThinh/SS12-BT03/actions/runs/38771480771
 
 ```text
-CD Multi Environment
-  Deploy to Staging    ✓
-  Environment: staging
-  Deploying to staging
+CD Multi Environment    waiting
+
+Deploy to Production    waiting
+Environment: production
+Review required by: lethinh26
+Approve and deploy
 ```
 
-## 4. Kết quả khi push vào main
-
-```text
-CD Multi Environment
-  Deploy to Production    Waiting
-  Environment: production
-  Review required by lethinh26
-  [Approve and deploy]
-```
-
-Sau khi phê duyệt:
-
-```text
-Deploy to Production
-  ✓ Deploying to production
-  ✓ Deployment successful
-```
+Job hiện đang chờ phê duyệt tại tab Actions.
